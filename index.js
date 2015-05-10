@@ -3,32 +3,14 @@ var mutexify = require('mutexify')
 module.exports = function createMutex() {
 	var lock = mutexify()
 
-	var locked = false
-	var mutexQueue = []
 	var readQueue = null
 
-	function processQueue() {
-		if (!locked && mutexQueue.length > 0) {
-			locked = true
-			var next = mutexQueue.shift()
-			var releaseCalledOnceAlready = false
-			process.nextTick(next, function() {
-				if (!releaseCalledOnceAlready) {
-					locked = false
-					releaseCalledOnceAlready = true
-					processQueue()
-				}
-			})
-		}
-	}
-
 	function writeLock(fn) {
-		mutexQueue.push(fn)
-		processQueue()
+		lock(fn)
 	}
 
 	function queueReadHandler() {
-		mutexQueue.push(function readLockTiemz(release) {
+		lock(function readLockTiemz(release) {
 			var thisBatchOfQueuedReads = readQueue
 			readQueue = null
 			var finishedReads = 0
@@ -61,7 +43,6 @@ module.exports = function createMutex() {
 		}
 
 		readQueue.push(fn)
-		processQueue()
 	}
 
 	return {
