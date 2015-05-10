@@ -5,34 +5,10 @@ module.exports = function createMutex() {
 
 	var readQueue = null
 
-	function writeLock(fn) {
-		lock(fn)
-	}
-
 	function queueReadHandler() {
 		lock(function readLockTiemz(release) {
-			var thisBatchOfQueuedReads = readQueue
+			asyncForEach(readQueue, release)
 			readQueue = null
-			var finishedReads = 0
-
-			thisBatchOfQueuedReads.forEach(function grantSingleReadLock(fn) {
-				var releaseCalledOnceAlready = false
-				try {
-					fn(function singleReadRelease() {
-						if (!releaseCalledOnceAlready) {
-							finishedReads++
-							releaseCalledOnceAlready = true
-							if (finishedReads >= thisBatchOfQueuedReads.length) {
-								release()
-							}
-						}
-					})
-				} catch (e) {
-					process.nextTick(function() {
-						throw e
-					})
-				}
-			})
 		})
 	}
 
@@ -46,7 +22,30 @@ module.exports = function createMutex() {
 	}
 
 	return {
-		writeLock: writeLock,
+		writeLock: lock,
 		readLock: readLock
 	}
+}
+
+function asyncForEach(arrayOfFunctions, cb) {
+	var callbacksCalled = 0
+
+	arrayOfFunctions.forEach(function(fn) {
+		var callbackCalledAlready = false
+		try {
+			fn(function singleReadRelease() {
+				if (!callbackCalledAlready) {
+					callbacksCalled++
+					callbackCalledAlready = true
+					if (callbacksCalled >= arrayOfFunctions.length) {
+						process.nextTick(cb)
+					}
+				}
+			})
+		} catch (e) {
+			process.nextTick(function() {
+				throw e
+			})
+		}
+	})
 }
