@@ -1,5 +1,7 @@
 # read-write-lock
 
+[![Build Status](https://travis-ci.org/TehShrike/read-write-lock.svg)](https://travis-ci.org/TehShrike/read-write-lock)
+
 - a write lock prevents all other writes or reads
 - a read lock only prevents writes
 
