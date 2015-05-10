@@ -15,12 +15,19 @@
     "mutexify",
     "lock",
     "read",
-    "write"
+    "write",
+    "semaphore"
   ],
   "author": "TehShrike",
   "license": "WTFPL",
   "bugs": {
     "url": "https://github.com/TehShrike/read-write-lock/issues"
   },
-  "homepage": "https://github.com/TehShrike/read-write-lock"
+  "homepage": "https://github.com/TehShrike/read-write-lock",
+  "devDependencies": {
+    "tape": "^4.0.0"
+  },
+  "dependencies": {
+    "mutexify": "^1.0.1"
+  }
 }
