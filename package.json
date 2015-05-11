@@ -1,6 +1,6 @@
 {
   "name": "read-write-lock",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Reads are exclusive with writes, writes are exclusive with everything",
   "main": "index.js",
   "scripts": {
