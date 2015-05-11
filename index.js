@@ -21,8 +21,14 @@ module.exports = function createMutex() {
 		readQueue.push(fn)
 	}
 
+	function writeLock(fn) {
+		lock(function(release) {
+			process.nextTick(fn, release)
+		})
+	}
+
 	return {
-		writeLock: lock,
+		writeLock: writeLock,
 		readLock: readLock
 	}
 }
