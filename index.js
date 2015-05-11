@@ -23,7 +23,9 @@ module.exports = function createMutex() {
 
 	function writeLock(fn) {
 		lock(function(release) {
-			process.nextTick(fn, release)
+			process.nextTick(function() {
+				fn(release)
+			})
 		})
 	}
 
