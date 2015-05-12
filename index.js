@@ -18,11 +18,13 @@ module.exports = function createMutex() {
 	}
 
 	function readLock(fn) {
-		if (readQueue.length === 0) {
-			queueReadHandler()
-		}
+		var readHandlerIsAlreadyOnQueue = readQueue.length > 0
 
 		readQueue.push(fn)
+
+		if (!readHandlerIsAlreadyOnQueue) {
+			queueReadHandler()
+		}
 	}
 
 	function writeLock(fn) {
