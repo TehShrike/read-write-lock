@@ -1,4 +1,5 @@
 var mutexify = require('mutexify')
+var each = require('async-each')
 
 module.exports = function createMutex() {
 	var lock = mutexify()
@@ -7,7 +8,9 @@ module.exports = function createMutex() {
 
 	function queueReadHandler() {
 		lock(function readLockTiemz(release) {
-			asyncForEach(readQueue, release)
+			each(readQueue, function(fn, cb) {
+				fn(cb)
+			}, release)
 			readQueue = null
 		})
 	}
@@ -33,27 +36,4 @@ module.exports = function createMutex() {
 		writeLock: writeLock,
 		readLock: readLock
 	}
-}
-
-function asyncForEach(arrayOfFunctions, cb) {
-	var callbacksCalled = 0
-
-	arrayOfFunctions.forEach(function(fn) {
-		var callbackCalledAlready = false
-		try {
-			fn(function singleReadRelease() {
-				if (!callbackCalledAlready) {
-					callbacksCalled++
-					callbackCalledAlready = true
-					if (callbacksCalled >= arrayOfFunctions.length) {
-						process.nextTick(cb)
-					}
-				}
-			})
-		} catch (e) {
-			process.nextTick(function() {
-				throw e
-			})
-		}
-	})
 }
