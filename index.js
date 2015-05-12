@@ -4,20 +4,19 @@ var each = require('async-each')
 module.exports = function createMutex() {
 	var lock = mutexify()
 
-	var readQueue = null
+	var readQueue = []
 
 	function queueReadHandler() {
 		lock(function readLockTiemz(release) {
 			each(readQueue, function(fn, cb) {
 				fn(cb)
 			}, release)
-			readQueue = null
+			readQueue = []
 		})
 	}
 
 	function readLock(fn) {
-		if (!readQueue) {
-			readQueue = []
+		if (readQueue.length === 0) {
 			queueReadHandler()
 		}
 
