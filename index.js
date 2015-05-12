@@ -9,7 +9,9 @@ module.exports = function createMutex() {
 	function queueReadHandler() {
 		lock(function readLockTiemz(release) {
 			each(readQueue, function(fn, cb) {
-				fn(cb)
+				process.nextTick(function() {
+					fn(cb)
+				})
 			}, release)
 			readQueue = []
 		})
