@@ -59,3 +59,13 @@ test('first basic test that occurs to me', function(t) {
 	})
 
 })
+
+test('empty queues are ok - readLock', function (t) {
+	setTimeout(t.end.bind(t), 5)
+	createMutex().readLock(function (release) { release() })
+})
+
+test('empty queues are ok - writeLock', function (t) {
+	setTimeout(t.end.bind(t), 5)
+	createMutex().writeLock(function (release) { release() })
+})
