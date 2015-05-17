@@ -29,6 +29,6 @@
   },
   "dependencies": {
     "async-each": "^0.1.6",
-    "mutexify": "^1.0.1"
+    "mutexify": "^1.1.0"
   }
 }
