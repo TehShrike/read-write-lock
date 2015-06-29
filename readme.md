@@ -37,6 +37,23 @@ mutex.readLock(function(release) {
 })
 ```
 
+## In the real world
+
+If you're using this to lock around a simple key/value store like [levelup](https://github.com/Level/levelup), you'll want a different lock for each key.  The [key-master](https://github.com/TehShrike/key-master) can help with this:
+
+```js
+var createMutex = require('read-write-lock')
+var KeyMaster = require('key-master')
+var mutexes = new KeyMaster(createMutex)
+
+mutexes.get('my key').readLock(function(release) {
+	db.get('my key', function(err, value) {
+		// wheeeee!
+		console.log('totally safe', value)
+		release()
+	})
+})
+```
 ## License
 
 [WTFPL](http://wtfpl2.com)
